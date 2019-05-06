@@ -11,6 +11,7 @@ class Background {
     this.y = 0
 
     this.velX = undefined
+
   }
 
   draw() {
@@ -33,26 +34,35 @@ class Background {
     this.x -= this.velX
     // Si la primera imagen ha llegado a su final reinicia
     if (this.x <= -this.canvasW) this.x = 0
-
   }
 
 }
 
+class BackgroundFixed extends Background {
 
-class BackgroundTop extends Background {
   constructor(ctx, canvasW, canvasH, url) {
     super(ctx, canvasW, canvasH, url)
-
-    this.velX = 10
+    this.velX = 0
   }
+
 }
 
+class BackgroundTop extends Background {
+
+  constructor(ctx, canvasW, canvasH, url) {
+    super(ctx, canvasW, canvasH, url)
+    this.velX = 3
+  }
+
+}
 
 
 class BackgroundBottom extends Background {
+
   constructor(ctx, canvasW, canvasH, url) {
     super(ctx, canvasW, canvasH, url)
-
-    this.velX = 5
+    this.velX = 1
   }
+
 }
+

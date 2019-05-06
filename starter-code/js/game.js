@@ -7,16 +7,20 @@ var Game = {
   },
   fps: undefined,
   update: undefined,
-  framesCounter: undefined,
+  framesCounter: 0,
   // Referente al background
   backgroundArray: [],
-  urlBackgroundTop: 'images/parallax/cga_2back_dungeon/2_4.png',
+  urlBackgroundFixed: 'images/parallax/cga_2back_dungeon/2_1.png',
   urlBackgroundBottom: 'images/parallax/cga_2back_dungeon/2_5.png',
+  urlBackgroundTop: 'images/parallax/cga_2back_dungeon/2_4.png',
+  // Referente a Floor
+  floor: undefined,
+  urlFloor: 'images/floor/floor.png',
   // Referente al player
   player: undefined,
   keys: {
-    // TOP_KEY: 38,
-    // SPACE: 32
+    TOP_KEY: 38,
+    SPACE: 32
   },
   // Referente al obstaculo
   obstacle: undefined,
@@ -60,7 +64,6 @@ var Game = {
 
     // Update 
     this.update = setInterval(() => {
-
       // Aumenta en 1 el contador
       this.framesCounter++;
       // controlamos que frameCounter no sea superior a 1000
@@ -93,7 +96,8 @@ var Game = {
   //reseteamos todos los elementos del juego para empezar en un estado limpio
   reset: function () {
     this.generateBackground()
-
+    this.player = new Player(this.ctx, this.canvas.width, this.canvas.height, this.keys.SPACE)
+    this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys.SPACE)
   },
 
   //limpieza de la pantalla
@@ -104,25 +108,30 @@ var Game = {
   // Introduce en el array de background la instancia de los backgrounds
   generateBackground: function () {
     this.backgroundArray.push(
-      new Background(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundTop)
-    )
-    this.backgroundArray.push(
-      new Background(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundBottom)
+      new BackgroundFixed(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundFixed),
+      new BackgroundBottom(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundBottom),
+      new BackgroundTop(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundTop)
     )
   },
 
   //dibuja todos los assets del juego
   drawAll: function () {
-    this.backgroundArray.forEach(background => {
-      background.draw()
-    })
+    // this.backgroundArray.forEach(background => {
+    //   background.draw()
+    // })
+
+    this.floor.draw()
+    this.player.draw(this.framesCounter)
   },
 
   //mueve todos los objetos del escenario, el fondo, el jugador y los obstáculos
   moveAll: function () {
-    this.backgroundArray.forEach(background => {
-      background.move()
-    })
+    // this.backgroundArray.forEach(background => {
+    //   background.move()
+    // })
+
+    this.floor.move()
+    this.player.move()
   },
 
 
