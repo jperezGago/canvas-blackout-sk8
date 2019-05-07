@@ -23,7 +23,8 @@ var Game = {
     SPACE: 32
   },
   // Referente al obstaculo
-  obstacle: undefined,
+  obstacleFence: undefined,
+  urlObstacleFence: 'images/obstaculos/fence.png',
   obstaclesArray: undefined,
   // Referente al Scoreboard
   scoreBoard: undefined,
@@ -72,10 +73,10 @@ var Game = {
       }
 
       // controlamos la velocidad de generación de obstáculos y el score cada segundo
-      if (this.framesCounter % 100 === 0) {
-        this.score++
-        this.generateObstacle();
-      }
+      // if (this.framesCounter % 100 === 0) {
+      //   this.score++
+      //   this.generateObstacle();
+      // }
 
       // Borra el canvas
       this.clear()
@@ -88,6 +89,7 @@ var Game = {
 
       // Chequea las colisiones
       // if (this.checkCollision()) this.gameOver()
+      if (this.checkCollision()) alert('BOOOM')
 
     }, 1000 / this.fps)
 
@@ -97,7 +99,9 @@ var Game = {
   reset: function () {
     this.generateBackground()
     this.player = new Player(this.ctx, this.canvas.width, this.canvas.height, this.keys.SPACE)
-    this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys.SPACE)
+    this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys.SPACE, this.player.x)
+    // Obstaculo de tipo fence
+    this.obstacleFence = new ObstacleFence(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleFence, this.floor)
   },
 
   //limpieza de la pantalla
@@ -110,7 +114,7 @@ var Game = {
     this.backgroundArray.push(
       new BackgroundFixed(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundFixed),
       new BackgroundBottom(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundBottom),
-      new BackgroundTop(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundTop)
+      new BackgroundTop(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundTop, this.urlObstacleFence)
     )
   },
 
@@ -121,6 +125,8 @@ var Game = {
     // })
 
     this.floor.draw()
+    // obstaculos
+    this.obstacleFence.draw()
     this.player.draw(this.framesCounter)
   },
 
@@ -132,8 +138,46 @@ var Game = {
 
     this.floor.move()
     this.player.move()
+    // obstaculos
+    this.obstacleFence.move()
   },
 
 
+  checkCollision: function () {
+
+    const gapX = 80
+    const gapY = 20
+    console.log(
+      this.player.x + this.player.w >= this.floor.x + this.floor.floorW + gapX
+      // this.floor.y0 >= this.floor.y,
+      // this.floor.x + this.floor.floorW, this.floor.x,
+      // this.floor.x + this.floorW + this.floor.enclineFloorW > this.floor.x
+    )
+    return (
+      (
+        // Colision con las vallas
+        this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
+        this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
+        (this.player.y + this.player.h >= this.obstacleFence.y + gapY && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 5)
+        && this.floor.velY <= 0
+      )
+      ||
+      (
+        // this.player.x + this.player.w >= this.floor.x + this.floor.floorW + gapX &&
+        // this.floor.x + this.floor.floorW + this.floor.enclineFloorW >= this.player.x &&
+        // // this.floor.y + this.floor.h >= this.player.y &&
+        // this.player.y + this.player.h >= this.floor.y + gapY
+
+        this.floor.y0 >= this.floor.y &&
+        this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX
+
+        // Colision con las escaleras
+        // this.player.x + this.player.w >= this.floor.x + gapX &&
+        // this.floor.x + this.floor.w >= this.player.x &&
+        // (this.player.y + this.player.h >= this.floor.y + gapY && this.player.y + this.player.h <= this.floor.y + gapY + 5)
+      )
+    )
+
+  },
 
 }

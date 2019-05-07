@@ -7,12 +7,12 @@ class Player {
     this.key = key
 
     // medidas de la imagen a representar en el canvas
-    this.w = 120;
-    this.h = 120;
+    this.w = 120
+    this.h = 120
 
     this.x = 50
-    this.y0 = this.canvasH * .5 - this.w - 10
-    this.y = 0
+    // this.y0 = this.canvasH * .5 - this.h
+    this.y = this.canvasH * .5 - this.h
 
     this.vel0 = 0
     this.velJump = 10
@@ -80,14 +80,14 @@ class Player {
     // this.y += this.velY
 
     // solo salta cuando el personaje está en el suelo
-    if (this.y >= this.y0) {
-      this.velY = 1;
-      this.y = this.y0;
-    }
-    else {
-      this.velY += this.gravity;
-      this.y += this.velY;
-    }
+    // if (this.y >= this.y0) {
+    //   this.velY = 1;
+    //   this.y = this.y0;
+    // }
+    // else {
+    //   this.velY += this.gravity;
+    //   this.y += this.velY;
+    // }
   }
 
 }
