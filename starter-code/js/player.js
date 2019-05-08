@@ -21,10 +21,10 @@ class Player {
     this.gravity = 0.4
 
     this.img = new Image()
-    this.img.src = 'images/player/skater-skating.png'
+    // this.img.src = undefined
 
     // número de imágenes diferentes
-    this.img.frames = 13;
+    this.img.frames = undefined;
     this.img.frameIndex = 0;
 
 
@@ -41,12 +41,9 @@ class Player {
   //   }
   // }
 
-  draw(framesCounter) {
-    // this.ctx.drawImage(
-    //   this.img,
-    //   this.x, this.y,
-    //   this.w, this.h
-    // )
+  draw(url, framesCounter, numSpriteFrames) {
+    this.img.src = url
+    this.img.frames = numSpriteFrames
 
     this.ctx.drawImage(
       this.img,
@@ -61,16 +58,15 @@ class Player {
     )
 
     this.animateImg(framesCounter);
-
   }
 
   animateImg(framesCounter) {
     // se va cambiando el frame. Cuanto mayor es el módulo, mas lento se mueve el personaje
-    if (framesCounter % 3 === 0) {
+    if (framesCounter % 6 === 0) {
       this.img.frameIndex += 1;
 
       // Si el frame es el último, se vuelve al primero
-      if (this.img.frameIndex > 0) this.img.frameIndex = 0;
+      if (this.img.frameIndex > this.img.frames - 1) this.img.frameIndex = 0;
     }
   }
 

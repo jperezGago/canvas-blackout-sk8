@@ -18,14 +18,18 @@ var Game = {
   urlFloor: 'images/floor/floor.png',
   // Referente al player
   player: undefined,
+  urlPlayer: 'images/player/skater-skating.png',
   keys: {
     TOP_KEY: 38,
     SPACE: 32
   },
+  numSpriteFrames: 13,
   // Referente al obstaculo
   obstacleFence: undefined,
   urlObstacleFence: 'images/obstaculos/fence.png',
   obstaclesArray: undefined,
+  obstacleBench: undefined,
+  urlObstacleBench: 'images/obstaculos/bench.png',
   // Referente al Scoreboard
   scoreBoard: undefined,
   score: undefined,
@@ -88,8 +92,13 @@ var Game = {
       // this.clearObstacles();
 
       // Chequea las colisiones
-      // if (this.checkCollision()) this.gameOver()
-      if (this.checkCollision()) alert('BOOOM')
+      this.checkCollision()
+
+      // Chequea los grinds
+      if (this.checkGrind()) this.grind()
+      // Si esta grindando y se ha terminado la valla
+      if ((this.floor.y0 == this.floor.yin + 90) && !this.checkGrind()) this.floor.y0 = this.floor.yin
+
 
     }, 1000 / this.fps)
 
@@ -102,6 +111,7 @@ var Game = {
     this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys.SPACE, this.player.x)
     // Obstaculo de tipo fence
     this.obstacleFence = new ObstacleFence(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleFence, this.floor)
+    this.obstacleBench = new ObstacleBench(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleBench, this.floor)
   },
 
   //limpieza de la pantalla
@@ -118,66 +128,97 @@ var Game = {
     )
   },
 
-  //dibuja todos los assets del juego
   drawAll: function () {
     // this.backgroundArray.forEach(background => {
     //   background.draw()
     // })
-
     this.floor.draw()
-    // obstaculos
     this.obstacleFence.draw()
-    this.player.draw(this.framesCounter)
+    this.obstacleBench.draw()
+    this.player.draw(this.urlPlayer, this.framesCounter, this.numSpriteFrames)
   },
 
-  //mueve todos los objetos del escenario, el fondo, el jugador y los obstáculos
   moveAll: function () {
     // this.backgroundArray.forEach(background => {
     //   background.move()
     // })
-
     this.floor.move()
     this.player.move()
-    // obstaculos
     this.obstacleFence.move()
+    this.obstacleBench.move()
   },
 
-
+  /**************************************************************************************
+  /* Separar esta funcion en checkCollision y checkGrind
+  ***************************************************************************************/
   checkCollision: function () {
-
     const gapX = 80
     const gapY = 20
-    console.log(
-      this.player.x + this.player.w >= this.floor.x + this.floor.floorW + gapX
-      // this.floor.y0 >= this.floor.y,
-      // this.floor.x + this.floor.floorW, this.floor.x,
-      // this.floor.x + this.floorW + this.floor.enclineFloorW > this.floor.x
-    )
-    return (
-      (
-        // Colision con las vallas
-        this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
-        this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
-        (this.player.y + this.player.h >= this.obstacleFence.y + gapY && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 5)
-        && this.floor.velY <= 0
-      )
-      ||
-      (
-        // this.player.x + this.player.w >= this.floor.x + this.floor.floorW + gapX &&
-        // this.floor.x + this.floor.floorW + this.floor.enclineFloorW >= this.player.x &&
-        // // this.floor.y + this.floor.h >= this.player.y &&
-        // this.player.y + this.player.h >= this.floor.y + gapY
 
-        this.floor.y0 >= this.floor.y &&
-        this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX
+    // Colision con las vallas
+    // if (this.checkValla()) this.grind()
 
-        // Colision con las escaleras
-        // this.player.x + this.player.w >= this.floor.x + gapX &&
-        // this.floor.x + this.floor.w >= this.player.x &&
-        // (this.player.y + this.player.h >= this.floor.y + gapY && this.player.y + this.player.h <= this.floor.y + gapY + 5)
-      )
-    )
+    // Si esta grindando y se ha terminado la valla
+    // if ((this.floor.y0 == this.floor.yin + 90) && !this.checkValla()) this.floor.y0 = this.floor.yin
 
+    // Colision con el desnivel
+    if (
+      this.floor.y0 >= this.floor.y &&
+      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX) {
+      this.dawnFall()
+    }
   },
+
+  checkGrind: function () {
+    const gapX = 80
+    const gapY = 20
+
+    return (
+      this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
+      this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
+      (this.player.y + this.player.h >= this.obstacleFence.y && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 10) &&
+      // Direccion hacia abajo
+      this.floor.velY <= 0
+      ||
+      this.player.x + this.player.w >= this.obstacleBench.x + gapX &&
+      this.obstacleBench.x + this.obstacleBench.w >= this.player.x &&
+      (this.player.y + this.player.h >= this.obstacleBench.y && this.player.y + this.player.h <= this.obstacleBench.y + gapY + 10) &&
+      // Direccion hacia abajo
+      this.floor.velY <= 0
+    )
+  },
+
+  // checkValla: function () {
+  //   const gapX = 80
+  //   const gapY = 20
+
+  //   if (
+  //     this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
+  //     this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleFence.y && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //     ||
+  //     this.player.x + this.player.w >= this.obstacleBench.x + gapX &&
+  //     this.obstacleBench.x + this.obstacleBench.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleBench.y && this.player.y + this.player.h <= this.obstacleBench.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //   )
+  // },
+
+  dawnFall: function () {
+    this.urlPlayer = 'images/player/downfall.png'
+    this.numSpriteFrames = 16
+    // alert('BOOM!')
+  },
+
+  grind: function () {
+    this.floor.y0 = this.floor.yin + 90
+  },
+
+  reseteaGrindada: function () {
+    this.floor.y0 = this.floor.yin
+  }
 
 }

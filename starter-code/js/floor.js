@@ -8,7 +8,7 @@ class Floor {
     this.key = key
     this.playerX = playerX
 
-    this.floorW = this.canvasW + 2000
+    this.floorW = this.canvasW + 3000
     this.floorH = this.canvasH
 
     this.enclineFloorW = 500
@@ -18,8 +18,6 @@ class Floor {
     this.x = 0
     this.velX = 10
 
-    // this.x0 = -760 
-    // this.xf = -960
     this.x0 = -this.floorW + this.playerX + 10
     this.xf = this.x0 - this.enclineFloorW + 10
 
@@ -39,6 +37,8 @@ class Floor {
     this.img2 = new Image()
     this.img2.src = 'images/floor/encline-floor.png'
 
+    this.yGrind = 0
+
 
     // Llamada a el setListener de las teclas
     this.setListeners();
@@ -54,7 +54,6 @@ class Floor {
   }
 
   draw() {
-    // console.log(this.yin)
     // Dibuja el floor
     this.ctx.drawImage(
       this.img,
@@ -75,22 +74,15 @@ class Floor {
   }
 
   move() {
-    // console.log(this.x)
-    // console.log(this.y)
-
     // Mueve el suelo en el eje X
     this.x -= this.velX
 
-    // Mueve el suelo en el eje Y
-    // if (this.x >= this.x0) this.y0 = this.yin
+    // Cuando cumple el ciclo mueve el suelo en el eje Y
     if (this.x < this.x0 && this.x >= this.xf) {
       this.y0 = (this.x - this.x0) * (this.yf - this.yin) / (this.xf - this.x0) + this.yin
     }
-    // else if (this.x < this.xf) this.y0 = this.yf
-    // else this.y0 = this.yf
 
-    // Mueve el suelo en el eje Y
-    // solo salta cuando el personaje está en el suelo
+    // Solo salta cuando el personaje esta en el suelo
     if (this.y <= this.y0) {
       this.velY = -10;
       this.y = this.y0;

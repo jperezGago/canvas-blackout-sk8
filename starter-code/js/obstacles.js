@@ -24,13 +24,18 @@ class Obstacle {
       this.w, this.h
     )
 
-    if (this.x + this.w < 0) this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.5
   }
 
-  move() {
-    this.y = this.floor.y - this.h
-    this.x -= this.velX
-  }
+  // move() {
+  // La posicion X e Y sigue a la X e Y del suelo
+  // this.y = this.floor.y - this.h
+  // this.x -= this.velX
+
+  // if (this.x + this.w < 0) {
+  //   this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.25
+  //   this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.75
+  // }
+  // }
 
 }
 
@@ -41,14 +46,46 @@ class ObstacleFence extends Obstacle {
 
     this.w = 500
     this.h = 100
-    // this.y = (this.canvasH * .5 - 6) - this.h
-    // copiamos la y que tenga el suelo
+
     this.floor = floor
     this.y = this.floor.y - this.h
+    this.x = this.floor.floorW * 0.40
+  }
 
-    this.x = this.floor.floorW * 0.5
-    // console.log(this.x)
+  move() {
+    // La posicion X e Y sigue a la X e Y del suelo
+    this.y = this.floor.y - this.h
+    this.x -= this.velX
 
+    if (this.x + this.w < 0) {
+      this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.40
+    }
+  }
+
+}
+
+
+class ObstacleBench extends Obstacle {
+
+  constructor(ctx, canvasW, canvasH, url, floor) {
+    super(ctx, canvasW, canvasH, url)
+
+    this.w = 200
+    this.h = 100
+
+    this.floor = floor
+    this.y = this.floor.y - this.h
+    this.x = this.floor.floorW * 0.75
+  }
+
+  move() {
+    // La posicion X e Y sigue a la X e Y del suelo
+    this.y = this.floor.y - this.h
+    this.x -= this.velX
+
+    if (this.x + this.w < 0) {
+      this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.75
+    }
   }
 
 }
