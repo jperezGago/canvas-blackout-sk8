@@ -19,54 +19,57 @@ class Player {
     this.velY = this.vel0
 
     this.gravity = 0.4
+    this.imgs = {
+      skatingImg: new Image(),
+      dawnFallingImg: new Image(),
+      stopedImg: new Image(),
+      jumpImg: new Image()
+    }
 
-    this.img = new Image()
-    // this.img.src = undefined
-
-    // número de imágenes diferentes
-    this.img.frames = undefined;
-    this.img.frameIndex = 0;
-
-
-    // Llamada a el setListener de las teclas
-    // this.setListeners();
+    // Img patinando
+    this.imgs.skatingImg.src = 'images/player/skater-skating.png'
+    this.imgs.skatingImg.frames = 13
+    this.imgs.skatingImg.frameIndex = 0
+    // Img caida
+    this.imgs.dawnFallingImg.src = 'images/player/downfall.png'
+    this.imgs.dawnFallingImg.frames = 16
+    this.imgs.dawnFallingImg.frameIndex = 0
+    // Img parado
+    this.imgs.stopedImg.src = 'images/player/stoped.png'
+    this.imgs.stopedImg.frames = 1
+    this.imgs.stopedImg.frameIndex = 0
+    // Img saltando
+    this.imgs.jumpImg.src = 'images/player/flip.png'
+    this.imgs.jumpImg.frames = 31
+    this.imgs.jumpImg.frameIndex = 0
   }
 
-  // setListeners() {
-  //   document.onkeydown = e => {
-  //     if (e.keyCode === this.key && this.y == this.y0) {
-  //       this.y--;
-  //       this.velY = -10;
-  //     }
-  //   }
-  // }
-
-  draw(url, framesCounter, numSpriteFrames) {
-    this.img.src = url
-    this.img.frames = numSpriteFrames
+  draw(keyImg, framesCounter) {
+    console.log(keyImg)
+    const img = this.imgs[keyImg]
 
     this.ctx.drawImage(
-      this.img,
-      this.img.frameIndex * Math.floor(this.img.width / this.img.frames),
+      img,
+      img.frameIndex * Math.floor(img.width / img.frames),
       0,
-      Math.floor(this.img.width / this.img.frames),
-      this.img.height,
+      Math.floor(img.width / img.frames),
+      img.height,
       this.x,
       this.y,
       this.w,
       this.h
     )
-
-    this.animateImg(framesCounter);
+    // Animar los sprite
+    this.animateImg(framesCounter, img);
   }
 
-  animateImg(framesCounter) {
+  animateImg(framesCounter, img) {
     // se va cambiando el frame. Cuanto mayor es el módulo, mas lento se mueve el personaje
-    if (framesCounter % 6 === 0) {
-      this.img.frameIndex += 1;
+    if (framesCounter % 3 === 0) {
+      img.frameIndex += 1;
 
       // Si el frame es el último, se vuelve al primero
-      if (this.img.frameIndex > this.img.frames - 1) this.img.frameIndex = 0;
+      if (img.frameIndex > img.frames - 1) img.frameIndex = 0;
     }
   }
 

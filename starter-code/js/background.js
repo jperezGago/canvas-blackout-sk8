@@ -56,7 +56,6 @@ class BackgroundTop extends Background {
 
 }
 
-
 class BackgroundBottom extends Background {
 
   constructor(ctx, canvasW, canvasH, url) {

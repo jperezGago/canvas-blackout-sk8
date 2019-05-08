@@ -1,6 +1,6 @@
 class Obstacle {
 
-  constructor(ctx, canvasW, canvasH, url) {
+  constructor(ctx, canvasW, canvasH, url, floor) {
     this.ctx = ctx
     this.canvasW = canvasW
     this.canvasH = canvasH
@@ -11,10 +11,13 @@ class Obstacle {
     this.w = undefined
     this.h = undefined
 
+    this.floor = floor
+
     this.x = undefined
     this.y = undefined
 
-    this.velX = 10
+    // Pone la velocidad del suelo
+    this.velX = this.floor.velX
   }
 
   draw() {
@@ -42,7 +45,7 @@ class Obstacle {
 class ObstacleFence extends Obstacle {
 
   constructor(ctx, canvasW, canvasH, url, floor) {
-    super(ctx, canvasW, canvasH, url)
+    super(ctx, canvasW, canvasH, url, floor)
 
     this.w = 500
     this.h = 100
@@ -53,6 +56,9 @@ class ObstacleFence extends Obstacle {
   }
 
   move() {
+    // Pone la velocidad del suelo, por si esta es cambiada en el transcurso del juego
+    this.velX = this.floor.velX
+
     // La posicion X e Y sigue a la X e Y del suelo
     this.y = this.floor.y - this.h
     this.x -= this.velX
@@ -68,7 +74,7 @@ class ObstacleFence extends Obstacle {
 class ObstacleBench extends Obstacle {
 
   constructor(ctx, canvasW, canvasH, url, floor) {
-    super(ctx, canvasW, canvasH, url)
+    super(ctx, canvasW, canvasH, url, floor)
 
     this.w = 200
     this.h = 100
@@ -79,6 +85,9 @@ class ObstacleBench extends Obstacle {
   }
 
   move() {
+    // Pone la velocidad del suelo, por si esta es cambiada en el transcurso del juego
+    this.velX = this.floor.velX
+
     // La posicion X e Y sigue a la X e Y del suelo
     this.y = this.floor.y - this.h
     this.x -= this.velX

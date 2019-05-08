@@ -1,19 +1,18 @@
 class Floor {
 
-  constructor(ctx, canvasW, canvasH, url, key, playerX) {
+  constructor(ctx, canvasW, canvasH, url, keys, playerX) {
     this.ctx = ctx
     this.canvasW = canvasW
     this.canvasH = canvasH
     this.url = url
-    this.key = key
+    this.keys = keys
     this.playerX = playerX
 
     this.floorW = this.canvasW + 3000
     this.floorH = this.canvasH
 
     this.enclineFloorW = 500
-    // this.enclineFloorH = this.canvasH - 50  // para la imagen corta
-    this.enclineFloorH = this.canvasH + 360
+    this.enclineFloorH = this.canvasH + 330
 
     this.x = 0
     this.velX = 10
@@ -40,16 +39,23 @@ class Floor {
     this.yGrind = 0
 
 
-    // Llamada a el setListener de las teclas
-    this.setListeners();
+    // Llamada a el setListener del teclado
+    // this.setListeners();
   }
 
-  setListeners() {
-    document.onkeydown = e => {
-      if (e.keyCode === this.key && this.y == this.y0) {
-        this.y++;
-        this.velY = 10;
-      }
+  // setListeners() {
+  //   document.onkeydown = e => {
+  //     if (e.keyCode == this.keys.SPACE && this.y == this.y0) {
+  //       this.y++;
+  //       this.velY = 10;
+  //     }
+  //   }
+  // }
+
+  jump() {
+    if (this.y == this.y0) {
+      this.y++;
+      this.velY = 10;
     }
   }
 
@@ -100,6 +106,14 @@ class Floor {
       this.y0 = this.yin
       this.y += 340
     }
+  }
+
+  stop() {
+    this.velX = 0
+  }
+
+  continue() {
+    this.velX = 10
   }
 
 }

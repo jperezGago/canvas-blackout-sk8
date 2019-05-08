@@ -8,31 +8,36 @@ var Game = {
   fps: undefined,
   update: undefined,
   framesCounter: 0,
-  // Referente al background
+  // background
   backgroundArray: [],
   urlBackgroundFixed: 'images/parallax/cga_2back_dungeon/2_1.png',
   urlBackgroundBottom: 'images/parallax/cga_2back_dungeon/2_5.png',
   urlBackgroundTop: 'images/parallax/cga_2back_dungeon/2_4.png',
-  // Referente a Floor
+  // floor
   floor: undefined,
   urlFloor: 'images/floor/floor.png',
-  // Referente al player
+  // player
   player: undefined,
-  urlPlayer: 'images/player/skater-skating.png',
+  keyImgPlayer: undefined,
   keys: {
     TOP_KEY: 38,
-    SPACE: 32
+    SPACE: 32,
+    ENTER: 13,
+    P: 112
   },
-  numSpriteFrames: 13,
-  // Referente al obstaculo
+  // ostaculos
   obstacleFence: undefined,
   urlObstacleFence: 'images/obstaculos/fence.png',
   obstaclesArray: undefined,
   obstacleBench: undefined,
   urlObstacleBench: 'images/obstaculos/bench.png',
-  // Referente al Scoreboard
+  // scoreboard
   scoreBoard: undefined,
   score: undefined,
+  // time
+  timeBoard: undefined,
+  time: undefined,
+
 
   init: function (canvasId) {
     // Obtenemos el id del canvas, extraemos el objeto canvas y el contexto
@@ -67,6 +72,9 @@ var Game = {
     // Resetea todos los elementos del juego
     this.reset()
 
+    // Llama al listener de teclado
+    this.setListeners();
+
     // Update 
     this.update = setInterval(() => {
       // Aumenta en 1 el contador
@@ -76,20 +84,22 @@ var Game = {
         this.framesCounter = 0;
       }
 
+      if (this.framesCounter % 60 == 0) this.time--
+
       // controlamos la velocidad de generación de obstáculos y el score cada segundo
       // if (this.framesCounter % 100 === 0) {
       //   this.score++
       //   this.generateObstacle();
       // }
 
+      // eliminamos obstáculos fuera del canvas
+      // this.clearObstacles();
+
       // Borra el canvas
       this.clear()
       // Llamadas a los metodos de dibujar y mover
       this.drawAll()
       this.moveAll()
-
-      // eliminamos obstáculos fuera del canvas
-      // this.clearObstacles();
 
       // Chequea las colisiones
       this.checkCollision()
@@ -99,24 +109,56 @@ var Game = {
       // Si esta grindando y se ha terminado la valla
       if ((this.floor.y0 == this.floor.yin + 90) && !this.checkGrind()) this.floor.y0 = this.floor.yin
 
-
     }, 1000 / this.fps)
 
   },
 
   //reseteamos todos los elementos del juego para empezar en un estado limpio
   reset: function () {
+    this.framesCounter = 0;
+    //background
     this.generateBackground()
+    //player
+    this.keyImgPlayer = 'skatingImg'
     this.player = new Player(this.ctx, this.canvas.width, this.canvas.height, this.keys.SPACE)
-    this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys.SPACE, this.player.x)
+    this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys, this.player.x)
     // Obstaculo de tipo fence
     this.obstacleFence = new ObstacleFence(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleFence, this.floor)
     this.obstacleBench = new ObstacleBench(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleBench, this.floor)
+    // Score
+    this.scoreBoard = new ScoreBoard(this.ctx, this.canvas.width)
+    this.score = 0;
+    // Time
+    this.timeBoard = new Time(this.ctx, this.canvas.width)
+    this.time = 100;
   },
 
   //limpieza de la pantalla
   clear: function () {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  },
+
+  // Listener de teclado
+  setListeners: function () {
+    document.onkeypress = e => {
+      // Salto
+      if (e.keyCode == this.keys.SPACE) {
+        this.keyImgPlayer = 'jumpImg'
+        this.floor.jump()
+      }
+      // Stop 
+      if (e.keyCode == this.keys.P) {
+        // this.stop()
+        this.keyImgPlayer = 'stopedImg'
+        this.floor.stop()
+      }
+      // Continue
+      if (e.keyCode == this.keys.ENTER) {
+        // this.continue()
+        this.keyImgPlayer = 'skatingImg'
+        this.floor.continue()
+      }
+    }
   },
 
   // Introduce en el array de background la instancia de los backgrounds
@@ -135,7 +177,9 @@ var Game = {
     this.floor.draw()
     this.obstacleFence.draw()
     this.obstacleBench.draw()
-    this.player.draw(this.urlPlayer, this.framesCounter, this.numSpriteFrames)
+    this.player.draw(this.keyImgPlayer, this.framesCounter)
+    this.scoreBoard.draw(this.score)
+    this.timeBoard.draw(this.time)
   },
 
   moveAll: function () {
@@ -148,18 +192,9 @@ var Game = {
     this.obstacleBench.move()
   },
 
-  /**************************************************************************************
-  /* Separar esta funcion en checkCollision y checkGrind
-  ***************************************************************************************/
   checkCollision: function () {
     const gapX = 80
     const gapY = 20
-
-    // Colision con las vallas
-    // if (this.checkValla()) this.grind()
-
-    // Si esta grindando y se ha terminado la valla
-    // if ((this.floor.y0 == this.floor.yin + 90) && !this.checkValla()) this.floor.y0 = this.floor.yin
 
     // Colision con el desnivel
     if (
@@ -188,29 +223,8 @@ var Game = {
     )
   },
 
-  // checkValla: function () {
-  //   const gapX = 80
-  //   const gapY = 20
-
-  //   if (
-  //     this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
-  //     this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
-  //     (this.player.y + this.player.h >= this.obstacleFence.y && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 10) &&
-  //     // Direccion hacia abajo
-  //     this.floor.velY <= 0
-  //     ||
-  //     this.player.x + this.player.w >= this.obstacleBench.x + gapX &&
-  //     this.obstacleBench.x + this.obstacleBench.w >= this.player.x &&
-  //     (this.player.y + this.player.h >= this.obstacleBench.y && this.player.y + this.player.h <= this.obstacleBench.y + gapY + 10) &&
-  //     // Direccion hacia abajo
-  //     this.floor.velY <= 0
-  //   )
-  // },
-
   dawnFall: function () {
-    this.urlPlayer = 'images/player/downfall.png'
-    this.numSpriteFrames = 16
-    // alert('BOOM!')
+    this.keyImgPlayer = 'dawnFallingImg'
   },
 
   grind: function () {
@@ -219,6 +233,18 @@ var Game = {
 
   reseteaGrindada: function () {
     this.floor.y0 = this.floor.yin
-  }
+  },
+
+  // Puedo atacar directamente a la propiedad de una clase???????????????????????????????????????????????
+  // stop: function () {
+  //   this.floor.stop()
+  //   this.keyImgPlayer = 'stopedImg'
+  // },
+
+  // continue: function () {
+  //   console.log(this.keyImgPlayer)
+  //   this.floor.continue()
+  //   this.keyImgPlayer = 'skatingImg'
+  // },
 
 }
