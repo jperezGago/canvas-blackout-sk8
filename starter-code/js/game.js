@@ -75,6 +75,7 @@ var Game = {
     // Llama al listener de teclado
     this.setListeners();
 
+
     // Update 
     this.update = setInterval(() => {
       // Aumenta en 1 el contador
@@ -103,11 +104,14 @@ var Game = {
 
       // Chequea las colisiones
       this.checkCollision()
-
       // Chequea los grinds
-      if (this.checkGrind()) this.grind()
+      // if (this.checkGrind()) this.grind()
       // Si esta grindando y se ha terminado la valla
-      if ((this.floor.y0 == this.floor.yin + 90) && !this.checkGrind()) this.floor.y0 = this.floor.yin
+      // if ((this.floor.y0 == this.floor.yin + 90) && !this.checkGrind()) this.floor.y0 = this.floor.yin
+      this.checkGrind()
+
+      // Actualiza los sprites si es necesario
+      this.updateSprites(undefined)
 
     }, 1000 / this.fps)
 
@@ -119,7 +123,7 @@ var Game = {
     //background
     this.generateBackground()
     //player
-    this.keyImgPlayer = 'skatingImg'
+    this.keyImgPlayer = 'movingImg'
     this.player = new Player(this.ctx, this.canvas.width, this.canvas.height, this.keys.SPACE)
     this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys, this.player.x)
     // Obstaculo de tipo fence
@@ -141,22 +145,28 @@ var Game = {
   // Listener de teclado
   setListeners: function () {
     document.onkeypress = e => {
-      // Salto
+      // Jump
       if (e.keyCode == this.keys.SPACE) {
-        this.keyImgPlayer = 'jumpImg'
-        this.floor.jump()
+        // this.keyImgPlayer = 'jumpImg'
+        // this.updateSprites('jumpImg')
+        // this.floor.jump()
+        this.jump()
       }
       // Stop 
       if (e.keyCode == this.keys.P) {
         // this.stop()
-        this.keyImgPlayer = 'stopedImg'
-        this.floor.stop()
+        // this.keyImgPlayer = 'stopedImg'
+        // this.updateSprites('stoppedImg')
+        // this.floor.stop()
+        this.stop()
       }
       // Continue
       if (e.keyCode == this.keys.ENTER) {
         // this.continue()
-        this.keyImgPlayer = 'skatingImg'
-        this.floor.continue()
+        // this.keyImgPlayer = 'movingImg'
+        // this.updateSprites('movingImg')
+        // this.floor.continue()
+        this.continue()
       }
     }
   },
@@ -199,12 +209,45 @@ var Game = {
     // Colision con el desnivel
     if (
       this.floor.y0 >= this.floor.y &&
-      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX) {
-      this.dawnFall()
-    }
+      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX
+    )
+      this.updateScore('collision')
+
+    if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin)
+      this.stop()
+
   },
 
+  // checkGrind: function () {
+  //   const gapX = 80
+  //   const gapY = 20
+
+  //   return (
+  //     this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
+  //     this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleFence.y && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //     ||
+  //     this.player.x + this.player.w >= this.obstacleBench.x + gapX &&
+  //     this.obstacleBench.x + this.obstacleBench.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleBench.y && this.player.y + this.player.h <= this.obstacleBench.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //   )
+  // },
+
   checkGrind: function () {
+
+    if (this.isGrinding()) {
+      this.grind()
+      this.updateSprites('grindingImg')
+    }
+    // Si esta grindando y se ha terminado la valla
+    if ((this.floor.y0 == this.floor.yin + 90) && !this.isGrinding()) this.floor.y0 = this.floor.yin
+  },
+
+  isGrinding: function () {
     const gapX = 80
     const gapY = 20
 
@@ -223,9 +266,12 @@ var Game = {
     )
   },
 
-  dawnFall: function () {
-    this.keyImgPlayer = 'dawnFallingImg'
-  },
+
+
+  // dawnFall: function () {
+  //   // Actualizar Score
+
+  // },
 
   grind: function () {
     this.floor.y0 = this.floor.yin + 90
@@ -235,16 +281,47 @@ var Game = {
     this.floor.y0 = this.floor.yin
   },
 
-  // Puedo atacar directamente a la propiedad de una clase???????????????????????????????????????????????
-  // stop: function () {
-  //   this.floor.stop()
-  //   this.keyImgPlayer = 'stopedImg'
-  // },
+  updateSprites: function (keyImg) {
+    const gapX = 5
 
-  // continue: function () {
-  //   console.log(this.keyImgPlayer)
-  //   this.floor.continue()
-  //   this.keyImgPlayer = 'skatingImg'
-  // },
+    if (keyImg == undefined) {
+      // Chequea que esta en el suelo para actualizar la imagen
+      // if (this.player.currentSprite == 'jumpImg' && this.floor.onTheFloor()) this.keyImgPlayer = 'movingImg'
+      if (this.player.currentSprite == 'jumpImg' && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
+      // Colision con el desnivel
+      if (this.floor.y0 >= this.floor.y &&
+        this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX)
+        this.keyImgPlayer = 'dawnFallingImg'
+      // Tras caer por el desnivel
+      // if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
+      if (this.keyImgPlayer == 'dawnFallingImg' && this.player.finSprite) {
+        this.keyImgPlayer = 'movingImg'
+        this.player.finSprite = 0
+      }
+      // Tras grindar
+      if (this.keyImgPlayer == 'grindingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
+
+    } else this.keyImgPlayer = keyImg
+  },
+
+  updateScore: function (update) {
+    if (update == 'collision') this.score -= 10
+  },
+
+  stop: function () {
+    this.keyImgPlayer = 'stoppedImg'
+    this.floor.stop()
+  },
+
+  continue: function () {
+    //   console.log(this.keyImgPlayer)
+    this.keyImgPlayer = 'movingImg'
+    this.floor.continue()
+  },
+
+  jump: function () {
+    this.updateSprites('jumpImg')
+    this.floor.jump()
+  },
 
 }

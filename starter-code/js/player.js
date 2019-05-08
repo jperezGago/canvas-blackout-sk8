@@ -22,32 +22,44 @@ class Player {
     this.imgs = {
       skatingImg: new Image(),
       dawnFallingImg: new Image(),
-      stopedImg: new Image(),
-      jumpImg: new Image()
+      stoppedImg: new Image(),
+      jumpImg: new Image(),
+      movingImg: new Image(),
+      grindingImg: new Image(),
     }
 
-    // Img patinando
-    this.imgs.skatingImg.src = 'images/player/skater-skating.png'
-    this.imgs.skatingImg.frames = 13
+
+    // Img Skating
+    this.imgs.skatingImg.src = 'images/player/skating.png'
+    this.imgs.skatingImg.frames = 1
     this.imgs.skatingImg.frameIndex = 0
-    // Img caida
-    this.imgs.dawnFallingImg.src = 'images/player/downfall.png'
+    // Img Falldown
+    this.imgs.dawnFallingImg.src = 'images/player/falldawn.png'
     this.imgs.dawnFallingImg.frames = 16
     this.imgs.dawnFallingImg.frameIndex = 0
-    // Img parado
-    this.imgs.stopedImg.src = 'images/player/stoped.png'
-    this.imgs.stopedImg.frames = 1
-    this.imgs.stopedImg.frameIndex = 0
-    // Img saltando
-    this.imgs.jumpImg.src = 'images/player/flip.png'
-    this.imgs.jumpImg.frames = 31
+    // Img Stopped
+    this.imgs.stoppedImg.src = 'images/player/stopped.png'
+    this.imgs.stoppedImg.frames = 1
+    this.imgs.stoppedImg.frameIndex = 0
+    // Img Jumping
+    this.imgs.jumpImg.src = 'images/player/jump.png'
+    this.imgs.jumpImg.frames = 10
     this.imgs.jumpImg.frameIndex = 0
+    // Img Moving
+    this.imgs.movingImg.src = 'images/player/moving.png'
+    this.imgs.movingImg.frames = 1
+    this.imgs.movingImg.frameIndex = 0
+    // Img Grinding
+    this.imgs.grindingImg.src = 'images/player/grind.png'
+    this.imgs.grindingImg.frames = 1
+    this.imgs.grindingImg.frameIndex = 0
+
+    this.currentSprite = undefined
+
   }
 
   draw(keyImg, framesCounter) {
-    console.log(keyImg)
     const img = this.imgs[keyImg]
-
     this.ctx.drawImage(
       img,
       img.frameIndex * Math.floor(img.width / img.frames),
@@ -59,17 +71,20 @@ class Player {
       this.w,
       this.h
     )
+
+    // Actualiza el sprite actual
+    this.currentSprite = keyImg
     // Animar los sprite
-    this.animateImg(framesCounter, img);
+    this.animateImg(framesCounter, img)
   }
 
   animateImg(framesCounter, img) {
     // se va cambiando el frame. Cuanto mayor es el módulo, mas lento se mueve el personaje
-    if (framesCounter % 3 === 0) {
-      img.frameIndex += 1;
+    if (framesCounter % 6 === 0) {
+      img.frameIndex += 1
 
       // Si el frame es el último, se vuelve al primero
-      if (img.frameIndex > img.frames - 1) img.frameIndex = 0;
+      if (img.frameIndex > img.frames - 1) img.frameIndex = 0
     }
   }
 
@@ -80,12 +95,12 @@ class Player {
 
     // solo salta cuando el personaje está en el suelo
     // if (this.y >= this.y0) {
-    //   this.velY = 1;
-    //   this.y = this.y0;
+    //   this.velY = 1
+    //   this.y = this.y0
     // }
     // else {
-    //   this.velY += this.gravity;
-    //   this.y += this.velY;
+    //   this.velY += this.gravity
+    //   this.y += this.velY
     // }
   }
 

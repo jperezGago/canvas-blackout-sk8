@@ -116,4 +116,8 @@ class Floor {
     this.velX = 10
   }
 
+  onTheFloor() {
+    return this.y == this.y0
+  }
+
 }
