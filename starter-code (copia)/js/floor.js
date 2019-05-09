@@ -8,7 +8,7 @@ class Floor {
     this.keys = keys
     this.playerX = playerX
 
-    this.floorW = this.canvasW + 4000
+    this.floorW = this.canvasW + 3000
     this.floorH = this.canvasH
 
     this.enclineFloorW = 500

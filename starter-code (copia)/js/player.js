@@ -27,17 +27,12 @@ class Player {
       movingImg: new Image(),
       grindingImg: new Image(),
       runningImg: new Image(),
-      // manualTrick: new Image(),
-      shoveitTrickImg: new Image(),
-      treflipTrickImg: new Image(),
-      downImg: new Image(),
-      lowLifeImg: new Image(),
     }
 
 
     // Img Skating
     this.imgs.skatingImg.src = 'images/player/skating.png'
-    this.imgs.skatingImg.frames = 13
+    this.imgs.skatingImg.frames = 1
     this.imgs.skatingImg.frameIndex = 0
     // Img Falldown
     this.imgs.dawnFallingImg.src = 'images/player/falldawn.png'
@@ -63,39 +58,14 @@ class Player {
     this.imgs.runningImg.src = 'images/player/running.png'
     this.imgs.runningImg.frames = 12
     this.imgs.runningImg.frameIndex = 0
-    // Img shoveitTrick
-    this.imgs.shoveitTrickImg.src = 'images/player/shoveit.png'
-    this.imgs.shoveitTrickImg.frames = 8
-    this.imgs.shoveitTrickImg.frameIndex = 0
-    // Img treflipTrick
-    this.imgs.treflipTrickImg.src = 'images/player/treflip.png'
-    this.imgs.treflipTrickImg.frames = 12
-    this.imgs.treflipTrickImg.frameIndex = 0
-    // Img Down
-    this.imgs.downImg.src = 'images/player/down.png'
-    this.imgs.downImg.frames = 1
-    this.imgs.downImg.frameIndex = 0
 
-    // Img lowLife
-    this.imgs.lowLifeImg.src = 'images/player/lowLife.png'
-    this.imgs.lowLifeImg.frames = 13
-    this.imgs.lowLifeImg.frameIndex = 0
 
-    this.endSprite = false
+    this.currentSprite = undefined
+
   }
-
 
   draw(keyImg, framesCounter) {
     const img = this.imgs[keyImg]
-
-    if (keyImg == 'dawnFallingImg') {
-      this.w = 200
-      this.h = 130
-    } else {
-      this.w = 120
-      this.h = 120
-    }
-
     this.ctx.drawImage(
       img,
       img.frameIndex * Math.floor(img.width / img.frames),
@@ -109,22 +79,18 @@ class Player {
     )
 
     // Actualiza el sprite actual
-    // this.currentSprite = keyImgcons
+    this.currentSprite = keyImg
     // Animar los sprite
     this.animateImg(framesCounter, img)
   }
 
   animateImg(framesCounter, img) {
     // se va cambiando el frame. Cuanto mayor es el módulo, mas lento se mueve el personaje
-    if (framesCounter % 5 === 0) {
+    if (framesCounter % 6 === 0) {
       img.frameIndex += 1
 
       // Si el frame es el último, se vuelve al primero
-      if (img.frameIndex > img.frames - 1) {
-        img.frameIndex = 0
-        // Evita que las imagenes con un solo frame activen este valor
-        if (img.frames > 1) this.endSprite = true
-      } else this.endSprite = false
+      if (img.frameIndex > img.frames - 1) img.frameIndex = 0
     }
   }
 

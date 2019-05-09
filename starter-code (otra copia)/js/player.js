@@ -88,14 +88,6 @@ class Player {
   draw(keyImg, framesCounter) {
     const img = this.imgs[keyImg]
 
-    if (keyImg == 'dawnFallingImg') {
-      this.w = 200
-      this.h = 130
-    } else {
-      this.w = 120
-      this.h = 120
-    }
-
     this.ctx.drawImage(
       img,
       img.frameIndex * Math.floor(img.width / img.frames),
@@ -122,8 +114,7 @@ class Player {
       // Si el frame es el último, se vuelve al primero
       if (img.frameIndex > img.frames - 1) {
         img.frameIndex = 0
-        // Evita que las imagenes con un solo frame activen este valor
-        if (img.frames > 1) this.endSprite = true
+        this.endSprite = true
       } else this.endSprite = false
     }
   }

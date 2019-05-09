@@ -23,9 +23,7 @@ var Game = {
     TOP_KEY: 38,
     SPACE: 32,
     ENTER: 13,
-    P: 112,
-    A: 97,
-    S: 115
+    P: 112
   },
   // ostaculos
   obstacleFence: undefined,
@@ -39,11 +37,6 @@ var Game = {
   // time
   timeBoard: undefined,
   time: undefined,
-  // Tiempo de Sprites
-  timeSprite: 0,
-  // Juego comenzado
-  gameStarted: false,
-
 
 
   init: function (canvasId) {
@@ -78,6 +71,7 @@ var Game = {
   start: function () {
     // Resetea todos los elementos del juego
     this.reset()
+
     // Llama al listener de teclado
     this.setListeners();
 
@@ -91,7 +85,7 @@ var Game = {
         this.framesCounter = 0;
       }
 
-      if (this.framesCounter % 30 == 0 && this.gameStarted) this.time--
+      if (this.framesCounter % 60 == 0 && this.time < 100) this.time--
 
 
       // controlamos la velocidad de generación de obstáculos y el score cada segundo
@@ -152,31 +146,26 @@ var Game = {
   // Listener de teclado
   setListeners: function () {
     document.onkeypress = e => {
-      // Down
+      // Jump
       if (e.keyCode == this.keys.SPACE) {
-        this.updateSprites('downImg')
+        // this.keyImgPlayer = 'jumpImg'
+        // this.updateSprites('jumpImg')
+        // this.floor.jump()
+        this.jump()
       }
       // Stop 
       if (e.keyCode == this.keys.P) {
+        // this.keyImgPlayer = 'stopedImg'
+        // this.updateSprites('stoppedImg')
+        // this.floor.stop()
         this.stop()
       }
       // Continue
       if (e.keyCode == this.keys.ENTER) {
+        // this.keyImgPlayer = 'movingImg'
+        // this.updateSprites('movingImg')
+        // this.floor.continue()
         this.continue()
-      }
-      // Shove-it trick
-      if (e.keyCode == this.keys.A) {
-        this.doTrick('shoveitTrickImg')
-      }
-      // Tre-Flip trick
-      if (e.keyCode == this.keys.S) {
-        this.doTrick('treflipTrickImg')
-      }
-    }
-    document.onkeyup = e => {
-      // Jump
-      if (e.keyCode == this.keys.SPACE) {
-        this.jump()
       }
     }
   },
@@ -216,24 +205,36 @@ var Game = {
     const gapX = 80
     const gapY = 20
 
-    // Si esta cayendose, esperar a que se muestre el sprite entero
-    if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) {
+    // Colision con el desnivel
+    if (
+      this.floor.y0 >= this.floor.y &&
+      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX
+    )
+      this.updateScore('collision')
+
+    if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin)
       this.stop()
-      this.updateSprites('movingImg')
-      this.updateScore('collision')
-
-    } else if (this.floor.y0 >= this.floor.y &&
-      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW) {
-      this.updateSprites('dawnFallingImg')
-    }
-    // Colisiones en los trucos
-    if ((this.keyImgPlayer == 'shoveitTrickImg' || this.keyImgPlayer == 'treflipTrickImg') && this.floor.y <= this.floor.y0) {
-      this.updateSprites('dawnFallingImg')
-      this.updateScore('collision')
-    }
-
 
   },
+
+  // checkGrind: function () {
+  //   const gapX = 80
+  //   const gapY = 20
+
+  //   return (
+  //     this.player.x + this.player.w >= this.obstacleFence.x + gapX &&
+  //     this.obstacleFence.x + this.obstacleFence.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleFence.y && this.player.y + this.player.h <= this.obstacleFence.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //     ||
+  //     this.player.x + this.player.w >= this.obstacleBench.x + gapX &&
+  //     this.obstacleBench.x + this.obstacleBench.w >= this.player.x &&
+  //     (this.player.y + this.player.h >= this.obstacleBench.y && this.player.y + this.player.h <= this.obstacleBench.y + gapY + 10) &&
+  //     // Direccion hacia abajo
+  //     this.floor.velY <= 0
+  //   )
+  // },
 
   checkGrind: function () {
 
@@ -242,11 +243,7 @@ var Game = {
       this.updateSprites('grindingImg')
     }
     // Si esta grindando y se ha terminado la valla
-    if ((this.floor.y0 == this.floor.yin + 90) && !this.isGrinding()) {
-      this.floor.y0 = this.floor.yin
-      // actualiza el Score
-      this.updateScore('trick')
-    }
+    if ((this.floor.y0 == this.floor.yin + 90) && !this.isGrinding()) this.floor.y0 = this.floor.yin
   },
 
   isGrinding: function () {
@@ -279,9 +276,9 @@ var Game = {
     this.floor.y0 = this.floor.yin + 90
   },
 
-  // reseteaGrindada: function () {
-  //   this.floor.y0 = this.floor.yin
-  // },
+  reseteaGrindada: function () {
+    this.floor.y0 = this.floor.yin
+  },
 
   updateSprites: function (keyImg) {
     const gapX = 5
@@ -289,51 +286,21 @@ var Game = {
     if (keyImg == undefined) {
       // Chequea que esta en el suelo para actualizar la imagen
       // if (this.player.currentSprite == 'jumpImg' && this.floor.onTheFloor()) this.keyImgPlayer = 'movingImg'
-      // if ((this.player.currentSprite == 'jumpImg') && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
-      if ((this.keyImgPlayer == 'jumpImg') && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
+      if (this.player.currentSprite == 'jumpImg' && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
       // Colision con el desnivel
-      // if (this.floor.y0 >= this.floor.y &&
-      //   this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX)
-      //   this.keyImgPlayer = 'dawnFallingImg'
+      if (this.floor.y0 >= this.floor.y &&
+        this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX)
+        this.keyImgPlayer = 'dawnFallingImg'
       // Tras caer por el desnivel
-      // if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
-      // if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) this.updateSprites('movingImg')
-
+      if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
       // Tras grindar
       if (this.keyImgPlayer == 'grindingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
-      // Si esta corriendo
-      if (this.keyImgPlayer == 'runningImg') {
-        this.timeSprite++
-        if (this.timeSprite >= 60) {
-          this.keyImgPlayer = 'skatingImg'
-          this.timeSprite = 0
-        }
-      }
-      // Si esta patinando
-      if (this.keyImgPlayer == 'skatingImg') {
-        this.timeSprite++
-        if (this.timeSprite >= 100) {
-          this.keyImgPlayer = 'movingImg'
-          this.timeSprite = 0
-        }
-      }
-
-      // Si esta haciendo un truco
-      if ((this.keyImgPlayer == 'shoveitTrickImg' || this.keyImgPlayer == 'treflipTrickImg') && this.player.endSprite)
-        this.keyImgPlayer = 'movingImg'
-
-
 
     } else this.keyImgPlayer = keyImg
   },
 
   updateScore: function (update) {
-    if (update == 'collision')
-      this.time -= 10
-    else if (update == 'trick') {
-      this.score += 5
-      this.time += 2
-    }
+    if (update == 'collision') this.score -= 10
   },
 
   stop: function () {
@@ -357,14 +324,8 @@ var Game = {
   },
 
   goStart: function () {
-    this.gameStarted = true
-  },
-
-  doTrick: function (trick) {
-    if (this.floor.y > this.floor.y0) {
-      this.updateSprites(trick)
-      this.updateScore('trick')
-    }
+    // this.updateSprites('runningImg')
+    this.time--
   }
 
 

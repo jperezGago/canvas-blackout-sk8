@@ -39,10 +39,8 @@ var Game = {
   // time
   timeBoard: undefined,
   time: undefined,
-  // Tiempo de Sprites
+
   timeSprite: 0,
-  // Juego comenzado
-  gameStarted: false,
 
 
 
@@ -78,6 +76,7 @@ var Game = {
   start: function () {
     // Resetea todos los elementos del juego
     this.reset()
+
     // Llama al listener de teclado
     this.setListeners();
 
@@ -91,7 +90,7 @@ var Game = {
         this.framesCounter = 0;
       }
 
-      if (this.framesCounter % 30 == 0 && this.gameStarted) this.time--
+      if (this.framesCounter % 60 == 0 && this.time < 100) this.time--
 
 
       // controlamos la velocidad de generación de obstáculos y el score cada segundo
@@ -216,20 +215,22 @@ var Game = {
     const gapX = 80
     const gapY = 20
 
-    // Si esta cayendose, esperar a que se muestre el sprite entero
-    if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) {
-      this.stop()
-      this.updateSprites('movingImg')
-      this.updateScore('collision')
-
-    } else if (this.floor.y0 >= this.floor.y &&
+    if (this.floor.y0 >= this.floor.y &&
       this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW) {
       this.updateSprites('dawnFallingImg')
+      debugger
+      this.updateScore('collision')
+      debugger
     }
     // Colisiones en los trucos
     if ((this.keyImgPlayer == 'shoveitTrickImg' || this.keyImgPlayer == 'treflipTrickImg') && this.floor.y <= this.floor.y0) {
       this.updateSprites('dawnFallingImg')
       this.updateScore('collision')
+    }
+    // Si esta cayendose, esperar a que se muestre el sprite entero
+    if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) {
+      this.stop()
+      this.updateSprites('movingImg')
     }
 
 
@@ -242,11 +243,7 @@ var Game = {
       this.updateSprites('grindingImg')
     }
     // Si esta grindando y se ha terminado la valla
-    if ((this.floor.y0 == this.floor.yin + 90) && !this.isGrinding()) {
-      this.floor.y0 = this.floor.yin
-      // actualiza el Score
-      this.updateScore('trick')
-    }
+    if ((this.floor.y0 == this.floor.yin + 90) && !this.isGrinding()) this.floor.y0 = this.floor.yin
   },
 
   isGrinding: function () {
@@ -277,11 +274,12 @@ var Game = {
 
   grind: function () {
     this.floor.y0 = this.floor.yin + 90
+    this.updateScore('trick')
   },
 
-  // reseteaGrindada: function () {
-  //   this.floor.y0 = this.floor.yin
-  // },
+  reseteaGrindada: function () {
+    this.floor.y0 = this.floor.yin
+  },
 
   updateSprites: function (keyImg) {
     const gapX = 5
@@ -357,7 +355,8 @@ var Game = {
   },
 
   goStart: function () {
-    this.gameStarted = true
+    // this.updateSprites('runningImg')
+    this.time--
   },
 
   doTrick: function (trick) {
