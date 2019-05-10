@@ -14,10 +14,7 @@ window.onload = function () {
     canvas.style.display = 'block'
   }
 
-  // // Captura el boton controls
-  // const controlsButton = document.getElementById('controls')
   buttons[0].onclick = () => {
-    console.log(buttons)
     // Mueve los botones hacia la izquierda
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].classList.add('button-moved')
@@ -27,13 +24,36 @@ window.onload = function () {
 
   }
 
-
-
   // Se crea la etiqueta canvas
   // const parentCanvas = document.getElementById('game-board')
   // parentCanvas.innerHTML = `<canvas id="canvas"></canvas>`
-
-
-
   Game.init("canvas");
 };
+
+
+updateGameOver = function (message) {
+  const containerGameover = document.getElementById('container-gameover')
+  const buttons1 = document.getElementsByClassName('button1')
+  const canvas = document.getElementById('canvas')
+  const text = document.getElementById('text')
+
+  containerGameover.style.display = 'block'
+
+  buttons1[0].onclick = () => {
+    // Oculta todo menos el canvas
+    container.style.display = 'none'
+    containerGameover.style.display = 'none'
+
+  }
+
+  buttons1[1].onclick = () => {
+    // oculta todo menos el menu principal
+    containerGameover.style.display = 'none'
+    canvas.style.display = 'none'
+    container.style.display = 'block'
+
+  }
+
+  text.innerText = message
+
+}

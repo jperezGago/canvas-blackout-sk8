@@ -3,7 +3,7 @@ class Time {
     this.ctx = ctx
     this.canvasW = canvasW
 
-    this.x = this.canvasW - 260
+    this.x = this.canvasW - 270
     this.y = 70
 
     this.img = new Image()
@@ -16,7 +16,7 @@ class Time {
   draw(time) {
     this.ctx.drawImage(
       this.img,
-      this.x - 40, this.y - 80,
+      this.x - 50, this.y - 80,
       130, 130
     )
 

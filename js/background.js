@@ -1,6 +1,6 @@
 class Background {
 
-  constructor(ctx, canvasW, canvasH, url) {
+  constructor(ctx, canvasW, canvasH, url, floor) {
     this.ctx = ctx
     this.canvasW = canvasW
     this.canvasH = canvasH
@@ -11,6 +11,9 @@ class Background {
     this.y = 0
 
     this.velX = undefined
+    this.velX0 = undefined
+
+    this.floor = floor
 
   }
 
@@ -30,6 +33,8 @@ class Background {
   }
 
   move() {
+    if (!this.floor.velX) this.velX = 0
+    else this.velX = this.velX0
     // Mueve el background
     this.x -= this.velX
     // Si la primera imagen ha llegado a su final reinicia
@@ -40,28 +45,43 @@ class Background {
 
 class BackgroundFixed extends Background {
 
-  constructor(ctx, canvasW, canvasH, url) {
-    super(ctx, canvasW, canvasH, url)
+  constructor(ctx, canvasW, canvasH, url, floor) {
+    super(ctx, canvasW, canvasH, url, floor)
     this.velX = 0
+    this.velX0 = this.velX
   }
 
 }
 
-class BackgroundTop extends Background {
+class Background1 extends Background {
 
-  constructor(ctx, canvasW, canvasH, url) {
-    super(ctx, canvasW, canvasH, url)
-    this.velX = 3
-  }
-
-}
-
-class BackgroundBottom extends Background {
-
-  constructor(ctx, canvasW, canvasH, url) {
-    super(ctx, canvasW, canvasH, url)
+  constructor(ctx, canvasW, canvasH, url, floor) {
+    super(ctx, canvasW, canvasH, url, floor)
     this.velX = 1
+    this.velX0 = this.velX
+
   }
 
 }
 
+class Background2 extends Background {
+
+  constructor(ctx, canvasW, canvasH, url, floor) {
+    super(ctx, canvasW, canvasH, url, floor)
+    this.velX = 2
+    this.velX0 = this.velX
+
+  }
+
+}
+
+class Background3 extends Background {
+
+  constructor(ctx, canvasW, canvasH, url, floor) {
+    super(ctx, canvasW, canvasH, url, floor)
+    this.velX = 6
+    this.velX0 = this.velX
+
+  }
+
+}

@@ -10,9 +10,10 @@ var Game = {
   framesCounter: 0,
   // background
   backgroundArray: [],
-  urlBackgroundFixed: 'images/parallax/cga_2back_dungeon/2_1.png',
-  urlBackgroundBottom: 'images/parallax/cga_2back_dungeon/2_5.png',
-  urlBackgroundTop: 'images/parallax/cga_2back_dungeon/2_4.png',
+  urlBackgroundFixed: 'images/parallax/1/layers/l1_background.png',
+  urlBackground1: 'images/parallax/1/layers/l3_buildings01.png',
+  urlBackground2: 'images/parallax/1/layers/l4_buildings02.png',
+  urlBackground3: 'images/parallax/1/layers/l6_houses.png',
   // floor
   floor: undefined,
   urlFloor: 'images/floor/floor.png',
@@ -40,7 +41,7 @@ var Game = {
   // time
   timeBoard: undefined,
   time: undefined,
-  timeStart: 100,
+  timeStart: 10,
   // Tiempo de Sprites
   timeSprite: 0,
   // Juego comenzado
@@ -132,12 +133,13 @@ var Game = {
   //reseteamos todos los elementos del juego para empezar en un estado limpio
   reset: function () {
     this.framesCounter = 0;
-    //background
-    this.generateBackground()
     //player
     this.keyImgPlayer = 'stoppedImg'
     this.player = new Player(this.ctx, this.canvas.width, this.canvas.height, this.keys.SPACE)
+    // Floor
     this.floor = new Floor(this.ctx, this.canvas.width, this.canvas.height, this.urlFloor, this.keys, this.player.x)
+    //background
+    this.generateBackground()
     // Obstaculo de tipo fence
     this.obstacleFence = new ObstacleFence(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleFence, this.floor)
     this.obstacleBench = new ObstacleBench(this.ctx, this.canvas.width, this.canvas.height, this.urlObstacleBench, this.floor)
@@ -190,9 +192,10 @@ var Game = {
   // Introduce en el array de background la instancia de los backgrounds
   generateBackground: function () {
     this.backgroundArray.push(
-      new BackgroundFixed(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundFixed),
-      new BackgroundBottom(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundBottom),
-      new BackgroundTop(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundTop, this.urlObstacleFence)
+      new BackgroundFixed(this.ctx, this.canvas.width, this.canvas.height, this.urlBackgroundFixed, this.floor),
+      new Background1(this.ctx, this.canvas.width, this.canvas.height, this.urlBackground1, this.floor),
+      new Background2(this.ctx, this.canvas.width, this.canvas.height, this.urlBackground2, this.floor),
+      new Background3(this.ctx, this.canvas.width, this.canvas.height, this.urlBackground3, this.floor)
     )
   },
 
@@ -227,7 +230,7 @@ var Game = {
       this.stopGame()
       // TODO:  ver si esto sobra ???????????????????????????????????????????????????????????????????????????????
       this.updateSprites('movingImg')
-      this.updateTime('collision')
+      // this.updateTime('collision')
       // Colision con las escaleras
     } else if (this.floor.y0 >= this.floor.y &&
       this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW) {
@@ -329,8 +332,9 @@ var Game = {
   },
 
   updateTime: function (update) {
-    if (update == 'collision')
+    if (update == 'collision') {
       this.time -= 22
+    }
     else if (update == 'trick') {
       this.time += 2
     } else this.time--
@@ -371,28 +375,44 @@ var Game = {
   },
 
   gameOver: function () {
-    // this.scoresSaved.push(localStorage.setItem('Player score', this.score))
-    // this.printScores()
+    let message
+    // Record
+    if (+localStorage.getItem("Player score") < this.score) {
+      localStorage.setItem('Player score', this.score)
+      console.log("Nuevo record:"), this.score;
+      // this.drawRecord(`Nuevo record: ${this.score}`)
+      message = `Nuevo record: ${this.score}`
+
+    } else console.log("El record sigue siendo:", localStorage.getItem("Player score"))
+
+    // localStorage.clear();
+
+    console.log(localStorage.getItem("Player score"))
+    // this.drawRecord(`El record sigue siendo: ${localStorage.getItem("Player score")}`)
+    message = `El record sigue siendo: ${localStorage.getItem("Player score")}`
 
     clearInterval(this.update)
+
+    this.start();
+
     this.stopGame()
-    if (confirm("GAME OVER. Play again?")) {
-      this.start();
-    }
+
+    // if (confirm("GAME OVER. Play again?")) {
+    //   this.start();
+    // }
+
+    // Funcion que vuelve a la pantalla principal
+    updateGameOver(message)
 
   },
 
-  printScores: function () {
-    let keys = Object.keys(localStorage)
-    let values = Object.values(localStorage)
+  drawRecord: function (message) {
+    this.ctx.font = "100px sans-serif"
 
-    alert(keys)
-    for (let i = 0; i < keys.length; i++) {
-      console.log(`${keys[i]}: ${values[i]}`)
-    }
-    // scoresSaved.forEach(score => alert(`Player score: ${score}`))
-
-
+    this.ctx.fillStyle = "white"
+    this.ctx.fillText(message, this.x, this.y)
   }
+
+
 
 }
