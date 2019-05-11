@@ -12,13 +12,14 @@ class Floor {
     this.floorH = this.canvasH
 
     this.enclineFloorW = 500
-    this.enclineFloorH = this.canvasH + 330
+    this.enclineFloorH = this.canvasH + 360
 
     this.x = 0
     this.velX = 0
 
-    this.x0 = -this.floorW + this.playerX + 10
-    this.xf = this.x0 - this.enclineFloorW + 10
+    this.x0 = -this.floorW + this.playerX + 30
+    this.xf = this.x0 - this.enclineFloorW + 30
+
 
     this.yin = this.canvasH * .5
     this.yf = this.yin - 330
@@ -38,19 +39,7 @@ class Floor {
 
     this.yGrind = 0
 
-
-    // Llamada a el setListener del teclado
-    // this.setListeners();
   }
-
-  // setListeners() {
-  //   document.onkeydown = e => {
-  //     if (e.keyCode == this.keys.SPACE && this.y == this.y0) {
-  //       this.y++;
-  //       this.velY = 10;
-  //     }
-  //   }
-  // }
 
   jump() {
     if (this.y == this.y0) {
@@ -85,7 +74,7 @@ class Floor {
 
     // Cuando cumple el ciclo mueve el suelo en el eje Y
     if (this.x < this.x0 && this.x >= this.xf) {
-      this.y0 = (this.x - this.x0) * (this.yf - this.yin) / (this.xf - this.x0) + this.yin
+      this.y0 = (this.x - this.x0) * (this.yf - this.yin) / (this.xf - this.x0) + this.yin + 30
     }
 
     // Solo salta cuando el personaje esta en el suelo

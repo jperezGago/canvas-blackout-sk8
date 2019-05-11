@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/bootstrap-grid.min.css" />
+  <link rel="stylesheet" href="css/bootstrap-reboot.min.css" />
   <link rel="stylesheet" href="css/style.css">
   <script src="js/index.js"></script>
   <script src="js/background.js"></script>
@@ -17,17 +19,30 @@
   <title>BlackOut Sk8</title>
 </head>
 
-<div id="container">
-  <img src="images/menu/background2.jpg" alt="menu-image" id="menu">
+<div id="container-game">
+  <img src="images/menu/background.jpg" alt="menu-image" id="menu">
   <a href="#"><img src="images/menu/controls.png" alt="controls-icon" id="controls" class="button"></a>
   <a href="#"><img src="images/menu/start.png" alt="start-icon" id="start" class="button"></a>
   <div><img src="images/instructions/background.jpg" alt="menu-help" id="help"></div>
 </div>
-<div id="container-gameover">
-  <img src="images/gameover/gameover.png" alt="menu-game-over" id="gameover">
-  <p id="text"></p>
-  <a href="#"><img src="images/gameover/play.png" alt="start-icon" id="play" class="button1"></a>
-  <a href="#"><img src="images/gameover/atras.png" alt="atras-icon" id="atras" class="button1"></a>
+
+<div id="container-gameover" class="container">
+
+  <div class="row align-items-center" id="father-row">
+
+    <div class="col align-self-center">
+      <div class="box">
+
+        <img src="images/gameover/gameover.jpeg" alt="game-over-image" id="gameover">
+        <img src="images/gameover/rip.jpeg" alt="rip-image" id="rip">
+        <p id="text">Texto de prueba</p>
+
+        <a href="#"><img src="images/gameover/play.png" alt="start-icon" id="play" class="button1"></a>
+        <a href="#"><img src="images/gameover/atras.png" alt="atras-icon" id="atras" class="button1"></a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <body>

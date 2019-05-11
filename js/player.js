@@ -82,16 +82,23 @@ class Player {
     this.imgs.lowLifeImg.frameIndex = 0
 
     this.endSprite = false
+    // Nomdre de los trucos
+    this.ctx.font = "200px sans-serif"
+    // this.score = undefined
   }
+
+
 
 
   draw(keyImg, framesCounter) {
     const img = this.imgs[keyImg]
 
+    // Evita que el sprite de la caida se vea mas pequenho que los demas
     if (keyImg == 'dawnFallingImg') {
       this.w = 200
       this.h = 130
-    } else {
+    }
+    else {
       this.w = 120
       this.h = 120
     }
@@ -108,8 +115,6 @@ class Player {
       this.h
     )
 
-    // Actualiza el sprite actual
-    // this.currentSprite = keyImgcons
     // Animar los sprite
     this.animateImg(framesCounter, img)
   }
@@ -130,18 +135,12 @@ class Player {
 
 
   move() {
-    // this.velY += this.gravity
-    // this.y += this.velY
+  }
 
-    // solo salta cuando el personaje está en el suelo
-    // if (this.y >= this.y0) {
-    //   this.velY = 1
-    //   this.y = this.y0
-    // }
-    // else {
-    //   this.velY += this.gravity
-    //   this.y += this.velY
-    // }
+  printTricks(trick) {
+    this.trick = trick
+    this.ctx.fillStyle = "white"
+    this.ctx.fillText(trick, this.canvasW * .5, this.canvasH - 100)
   }
 
 }

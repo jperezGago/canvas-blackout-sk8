@@ -1,6 +1,6 @@
 window.onload = function () {
 
-  const container = document.getElementById('container')
+  const container = document.getElementById('container-game')
   const canvas = document.getElementById('canvas')
 
   const help = document.getElementById('help')
@@ -15,18 +15,22 @@ window.onload = function () {
   }
 
   buttons[0].onclick = () => {
-    // Mueve los botones hacia la izquierda
-    for (let i = 0; i < buttons.length; i++) {
-      buttons[i].classList.add('button-moved')
+    if (help.style.display == '' || help.style.display == 'none') {
+      // Mueve los botones hacia la izquierda
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].classList.add('button-moved')
+      }
+      // Muestra la ayuda
+      help.style.display = 'block'
+    } else if (help.style.display == 'block') {
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('button-moved')
+      }
+      help.style.display = 'none'
     }
-    // Muestra la ayuda
-    help.style.display = 'block'
 
   }
 
-  // Se crea la etiqueta canvas
-  // const parentCanvas = document.getElementById('game-board')
-  // parentCanvas.innerHTML = `<canvas id="canvas"></canvas>`
   Game.init("canvas");
 };
 
@@ -36,6 +40,8 @@ updateGameOver = function (message) {
   const buttons1 = document.getElementsByClassName('button1')
   const canvas = document.getElementById('canvas')
   const text = document.getElementById('text')
+  const container = document.getElementById('container-game')
+
 
   containerGameover.style.display = 'block'
 

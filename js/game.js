@@ -28,6 +28,7 @@ var Game = {
     A: 97,
     S: 115
   },
+  currentTrick: '',
   // ostaculos
   obstacleFence: undefined,
   urlObstacleFence: 'images/obstaculos/fence.png',
@@ -41,11 +42,12 @@ var Game = {
   // time
   timeBoard: undefined,
   time: undefined,
-  timeStart: 10,
+  timeStart: 60,
   // Tiempo de Sprites
   timeSprite: 0,
   // Juego comenzado
   gameStarted: false,
+
 
 
 
@@ -68,7 +70,6 @@ var Game = {
 
     // Start
     this.start()
-    // this.canvas.style.background = 'black'
 
   },
 
@@ -99,16 +100,6 @@ var Game = {
       // Cada medio segundo actualiza el tiempo
       if (this.framesCounter % 30 == 0 && this.gameStarted) this.updateTime()
 
-
-      // controlamos la velocidad de generación de obstáculos y el score cada segundo
-      // if (this.framesCounter % 100 === 0) {
-      //   this.score++
-      //   this.generateObstacle();
-      // }
-
-      // eliminamos obstáculos fuera del canvas
-      // this.clearObstacles();
-
       // Borra el canvas
       this.clear()
       // Llamadas a los metodos de dibujar y mover
@@ -117,10 +108,6 @@ var Game = {
 
       // Chequea las colisiones
       this.checkCollision()
-      // Chequea los grinds
-      // if (this.checkGrind()) this.grind()
-      // Si esta grindando y se ha terminado la valla
-      // if ((this.floor.y0 == this.floor.yin + 90) && !this.checkGrind()) this.floor.y0 = this.floor.yin
       this.checkGrind()
 
       // Actualiza los sprites si es necesario
@@ -161,7 +148,7 @@ var Game = {
   setListeners: function () {
     document.onkeypress = e => {
       // Down
-      if (e.keyCode == this.keys.SPACE) {
+      if (e.keyCode == this.keys.SPACE && this.floor.y == this.floor.y0) {
         this.updateSprites('downImg')
       }
       // Stop 
@@ -175,15 +162,18 @@ var Game = {
       // Shove-it trick
       if (e.keyCode == this.keys.A) {
         this.doTrick('shoveitTrickImg')
+        this.currentTrick = 'X1 Pop Shove-it!'
       }
       // Tre-Flip trick
       if (e.keyCode == this.keys.S) {
         this.doTrick('treflipTrickImg')
+        this.currentTrick = 'X1 Tre flip!'
+
       }
     }
     document.onkeyup = e => {
       // Jump
-      if (e.keyCode == this.keys.SPACE) {
+      if (e.keyCode == this.keys.SPACE && this.floor.y == this.floor.y0) {
         this.jump()
       }
     }
@@ -209,6 +199,8 @@ var Game = {
     this.player.draw(this.keyImgPlayer, this.framesCounter)
     this.scoreBoard.draw(this.score)
     this.timeBoard.draw(this.time)
+    this.player.printTricks(this.currentTrick)
+
   },
 
   moveAll: function () {
@@ -228,16 +220,15 @@ var Game = {
     // Si esta cayendose, esperar a que se muestre el sprite entero
     if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) {
       this.stopGame()
-      // TODO:  ver si esto sobra ???????????????????????????????????????????????????????????????????????????????
       this.updateSprites('movingImg')
-      // this.updateTime('collision')
       // Colision con las escaleras
     } else if (this.floor.y0 >= this.floor.y &&
-      this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW) {
+      this.player.x >= this.floor.x + this.floor.floorW &&
+      this.player.x <= this.floor.x + this.floor.floorW + this.floor.enclineFloorW) {
       this.updateSprites('dawnFallingImg')
     }
     // Colisiones en los trucos
-    if ((this.keyImgPlayer == 'shoveitTrickImg' || this.keyImgPlayer == 'treflipTrickImg') && this.floor.y <= this.floor.y0) {
+    else if ((this.keyImgPlayer == 'shoveitTrickImg' || this.keyImgPlayer == 'treflipTrickImg') && this.floor.y <= this.floor.y0) {
       this.updateSprites('dawnFallingImg')
       this.updateTime('collision')
     }
@@ -281,23 +272,16 @@ var Game = {
 
   grind: function () {
     this.floor.y0 = this.floor.yin + 90
+    // Actualiza el nombre del truco que se va a imprimir
+    this.currentTrick = 'X1 Grind!'
   },
 
   updateSprites: function (keyImg) {
     const gapX = 5
 
     if (keyImg == undefined) {
-      // Chequea que esta en el suelo para actualizar la imagen
-      // if (this.player.currentSprite == 'jumpImg' && this.floor.onTheFloor()) this.keyImgPlayer = 'movingImg'
-      // if ((this.player.currentSprite == 'jumpImg') && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
+
       if ((this.keyImgPlayer == 'jumpImg') && this.floor.y <= this.floor.y0) this.keyImgPlayer = 'movingImg'
-      // Colision con el desnivel
-      // if (this.floor.y0 >= this.floor.y &&
-      //   this.player.x + this.player.w / 2 >= this.floor.x + this.floor.floorW + gapX)
-      //   this.keyImgPlayer = 'dawnFallingImg'
-      // Tras caer por el desnivel
-      // if (this.keyImgPlayer == 'dawnFallingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
-      // if (this.keyImgPlayer == 'dawnFallingImg' && this.player.endSprite) this.updateSprites('movingImg')
 
       // Tras grindar
       if (this.keyImgPlayer == 'grindingImg' && this.floor.y0 == this.floor.yin) this.keyImgPlayer = 'movingImg'
@@ -345,7 +329,6 @@ var Game = {
   stopGame: function () {
     this.updateSprites('stoppedImg')
     this.floor.stop()
-    // clearInterval(this.update)
   },
 
   continue: function () {
@@ -377,7 +360,7 @@ var Game = {
   gameOver: function () {
     let message
     // Record
-    if (+localStorage.getItem("Player score") < this.score) {
+    if (+localStorage.getItem("Player score") <= this.score) {
       localStorage.setItem('Player score', this.score)
       console.log("Nuevo record:"), this.score;
       // this.drawRecord(`Nuevo record: ${this.score}`)
@@ -385,21 +368,11 @@ var Game = {
 
     } else console.log("El record sigue siendo:", localStorage.getItem("Player score"))
 
-    // localStorage.clear();
-
     console.log(localStorage.getItem("Player score"))
-    // this.drawRecord(`El record sigue siendo: ${localStorage.getItem("Player score")}`)
-    message = `El record sigue siendo: ${localStorage.getItem("Player score")}`
-
     clearInterval(this.update)
 
     this.start();
-
     this.stopGame()
-
-    // if (confirm("GAME OVER. Play again?")) {
-    //   this.start();
-    // }
 
     // Funcion que vuelve a la pantalla principal
     updateGameOver(message)

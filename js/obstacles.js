@@ -29,17 +29,6 @@ class Obstacle {
 
   }
 
-  // move() {
-  // La posicion X e Y sigue a la X e Y del suelo
-  // this.y = this.floor.y - this.h
-  // this.x -= this.velX
-
-  // if (this.x + this.w < 0) {
-  //   this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.25
-  //   this.x = this.floor.x + this.floor.floorW + this.floor.enclineFloorW + this.floor.floorW * 0.75
-  // }
-  // }
-
 }
 
 class ObstacleFence extends Obstacle {
